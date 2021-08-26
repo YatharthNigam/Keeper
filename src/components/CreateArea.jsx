@@ -1,53 +1,65 @@
 import React, { useState } from "react";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
+import Zoom from "@material-ui/core/Zoom";
 
 function CreateArea(props) {
-  const [card, setCard] = useState({ title: "", content: "" });
+  const [noteArea, setNoteArea] = useState(false);
+
+  const [note, setNote] = useState({
+    title: "",
+    content: "",
+  });
+
+  function handleClick(){
+    setNoteArea(true)
+  }
 
   function handleChange(event) {
     const { name, value } = event.target;
-    setCard((prevValue) => {
+
+    setNote((prevNote) => {
       return {
-        ...prevValue,
+        ...prevNote,
         [name]: value,
       };
     });
   }
 
-  function handleClick(event) {
-    props.onAdd(card);
+  function submitNote(event) {
+    props.onAdd(note);
+    setNote({
+      title: "",
+      content: "",
+    });
+    setNoteArea(false);
     event.preventDefault();
   }
 
   return (
     <div>
-      <form>
-        <input
-          onChange={handleChange}
-          value={card.title}
-          name="title"
-          placeholder="Title"
-        />
+      <form className="create-note">
+        {noteArea && (
+          <input
+            name="title"
+            onChange={handleChange}
+            value={note.title}
+            placeholder="Title"
+          />
+        )}
         <textarea
-          onChange={handleChange}
-          value={card.content}
           name="content"
+          onClick={handleClick}
+          onChange={handleChange}
+          value={note.content}
           placeholder="Take a note..."
-          rows="3"
+          rows={noteArea?"3":"1"}
         />
-        <button onClick={handleClick}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
+        <Zoom in={noteArea}>
+          <Fab onClick={submitNote}>
+            <AddIcon />
+          </Fab>
+        </Zoom>
       </form>
     </div>
   );
